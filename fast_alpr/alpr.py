@@ -98,12 +98,13 @@ class ALPR:
             force_download=ocr_force_download,
         )
 
-    def predict(self, frame: np.ndarray | str) -> list[ALPRResult]:
+    def predict(self, frame: np.ndarray | str, conf_threshold: float = 0.50) -> list[ALPRResult]:
         """
         Returns all recognized license plates from a frame.
 
         Parameters:
             frame: Unprocessed frame (Colors in order: BGR) or image path.
+            conf_threshold: Confidence threshold for filtering predictions.
 
         Returns:
             A list of ALPRResult objects containing detection and OCR results.
@@ -116,7 +117,7 @@ class ALPR:
         else:
             img = frame
 
-        plate_detections = self.detector.predict(img)
+        plate_detections = self.detector.predict(img, conf_threshold=conf_threshold)
         alpr_results: list[ALPRResult] = []
         for detection in plate_detections:
             bbox = detection.bounding_box
@@ -128,12 +129,13 @@ class ALPR:
             alpr_results.append(alpr_result)
         return alpr_results
 
-    def draw_predictions(self, frame: np.ndarray | str) -> np.ndarray:
+    def draw_predictions(self, frame: np.ndarray | str, conf_threshold: float = 0.50) -> np.ndarray:
         """
         Draws detections and OCR results on the frame.
 
         Parameters:
             frame: The original frame or image path.
+            conf_threshold: Confidence threshold for filtering predictions.
 
         Returns:
             The frame with detections and OCR results drawn.
@@ -148,7 +150,7 @@ class ALPR:
             img = frame
 
         # Get ALPR results using the ndarray
-        alpr_results = self.predict(img)
+        alpr_results = self.predict(img, conf_threshold=conf_threshold)
 
         for result in alpr_results:
             detection = result.detection

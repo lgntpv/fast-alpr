@@ -47,18 +47,19 @@ class DefaultDetector(BaseDetector):
             sess_options=sess_options,
         )
 
-    def predict(self, frame: np.ndarray) -> list[DetectionResult]:
+    def predict(self, frame: np.ndarray, conf_threshold: float = 0.50) -> list[DetectionResult]:
         """
         Perform detection on the input frame and return a list of detections.
 
         Parameters:
             frame: The input image/frame in which to detect license plates.
+            conf_threshold: Confidence threshold for filtering predictions.
 
         Returns:
             A list of detection results, each containing the label,
             confidence, and bounding box of a detected license plate.
         """
-        detections = self.detector.predict(frame)
+        detections = self.detector.predict(frame, conf_threshold=conf_threshold)
         detection_results = [
             DetectionResult(
                 label=detection.label,
